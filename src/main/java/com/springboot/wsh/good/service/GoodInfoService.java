@@ -69,7 +69,14 @@ public class GoodInfoService {
         String group = GoodSecKillRemindTimer.class.getName();
         JobDetail jobDetail = JobBuilder.newJob(GoodSecKillRemindTimer.class).withIdentity(name, group).build();
         jobDetail.getJobDataMap().put("goodId", goodId);
-        Trigger trigger = TriggerBuilder.newTrigger().withIdentity(name, group).startAt(new Date(startTime)).build();
+
+        //链式写法
+        //触发器传递参数  usingJobData支持键值对的值
+        Trigger trigger = TriggerBuilder.newTrigger().withIdentity(name, group)
+                .usingJobData("triggerStringData", "Hello trigger!")
+                .usingJobData("triggerDoubleData", 3.1415D)
+                .startAt(new Date(startTime))
+                .build();
         scheduler.scheduleJob(jobDetail, trigger);
     }
 
@@ -88,7 +95,9 @@ public class GoodInfoService {
         //创建任务
         JobDetail jobDetail = JobBuilder.newJob(GoodStockCheckTimer.class).withIdentity(name, group).build();
         //创建任务触发器
-        Trigger trigger = TriggerBuilder.newTrigger().withIdentity(name, group).withSchedule(scheduleBuilder).build();
+        Trigger trigger = TriggerBuilder.newTrigger().withIdentity(name, group)
+                .withSchedule(scheduleBuilder)
+                .build();
         //将触发器与任务绑定到调度器内
         scheduler.scheduleJob(jobDetail, trigger);
     }
